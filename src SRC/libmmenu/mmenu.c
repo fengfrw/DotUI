@@ -43,11 +43,11 @@ __attribute__((constructor)) static void init(void) {
 	
 	is_simple = exists(kEnableSimpleModePath);
 	
-	items[kItemContinue] 	= "Continue";
-	items[kItemSave] 		= "Save";
-	items[kItemLoad] 		= "Load";
-	items[kItemAdvanced] 	= is_simple ? "Reset" : "Advanced";
-	items[kItemExitGame] 	= "Quit";
+	items[kItemContinue] 	= "继续";
+	items[kItemSave] 		= "保存";
+	items[kItemLoad] 		= "加载";
+	items[kItemAdvanced] 	= is_simple ? "重置" : "高级";
+	items[kItemExitGame] 	= "退出";
 	
 	GFX_init();
 	
@@ -60,8 +60,8 @@ __attribute__((constructor)) static void init(void) {
 	slot_dot_selected = GFX_loadImage("slot-dot-selected.png");
 	arrow = GFX_loadImage("arrow.png");
 	arrow_highlighted = GFX_loadImage("arrow-highlighted.png");
-	no_preview = GFX_getText("No Preview", 0, 1);
-	empty_slot = GFX_getText("Empty Slot", 0, 1);
+	no_preview = GFX_getText("无预览", 0, 1);
+	empty_slot = GFX_getText("空插槽", 0, 1);
 }
 __attribute__((destructor)) static void quit(void) {
 	SDL_FreeSurface(overlay);
@@ -714,10 +714,10 @@ MenuReturnStatus ShowMenu(char* rom_path, char* save_path_template, SDL_Surface*
 				SDL_BlitSurface(slot_dot_selected, NULL, screen, &(SDL_Rect){Screen.menu.slots.x+(Screen.menu.slots.ox*slot),Screen.menu.slots.y});
 			}
 			
-			GFX_blitPill(screen, HINT_SLEEP, "SLEEP", Screen.buttons.left, Screen.menu.buttons.top);
+			GFX_blitPill(screen, HINT_SLEEP, "休眠", Screen.buttons.left, Screen.menu.buttons.top);
 			// TODO: change ACT to OKAY?
-			int button_width = GFX_blitButton(screen, "A", "ACT", -Screen.buttons.right, Screen.menu.buttons.top, Screen.button.text.ox_A);
-			GFX_blitButton(screen, "B", "BACK", -(Screen.buttons.right+button_width+Screen.buttons.gutter),Screen.menu.buttons.top, Screen.button.text.ox_B);
+			int button_width = GFX_blitButton(screen, "A", "确认", -Screen.buttons.right, Screen.menu.buttons.top, Screen.button.text.ox_A);
+			GFX_blitButton(screen, "B", "取消", -(Screen.buttons.right+button_width+Screen.buttons.gutter),Screen.menu.buttons.top, Screen.button.text.ox_B);
 			// TODO: /can this be cached?
 			
 			SDL_Flip(screen);
