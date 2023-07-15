@@ -234,6 +234,8 @@ void Input_poll(void) {
 			else if (key==MINUI_L3)		i = kButtonL3;
 			else if (key==MINUI_R3)		i = kButtonR3;
 			else if (key==MINUI_POWER)	i = kButtonPower;
+			else if (key==MINUI_VOLDN)	i = kButtonVolDn;
+			else if (key==MINUI_VOLUP)	i = kButtonVolUp;
 			else continue;
 			
 			if (event.type==SDL_KEYDOWN) {
@@ -819,7 +821,8 @@ int isCharging(void) {
 static char governor[128];
 
 void enterSleep(void) {
-	SetRawVolume(-60);
+	//SetRawVolume(-60);
+	SetMute(1);
 	// SetRawBrightness(0);
 	putInt("/sys/class/gpio/export", 4);
 	putFile("/sys/class/gpio/gpio4/direction", "out");
@@ -839,6 +842,7 @@ void exitSleep(void) {
 	putInt("/sys/class/pwm/pwmchip0/pwm0/enable",0);
 	putInt("/sys/class/pwm/pwmchip0/pwm0/enable",1);
 	// SetBrightness(GetBrightness());
+	SetMute(0);
 	SetVolume(GetVolume());
 	
 	// restore previous governor
@@ -856,7 +860,7 @@ void powerOff(void) {
 		GFX_blitBodyCopy(screen, msg, 0,0,Screen.width,Screen.height);
 		SDL_Flip(screen);
 		sleep(1);
-		system("poweroff");
+		system("shutdown");
 		while (1) pause();
 	}
 }

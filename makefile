@@ -23,6 +23,8 @@ RELEASE_BASE=DotUI-$(RELEASE_TIME)
 RELEASE_DOT!=find ./releases/. -regex ".*/$(RELEASE_BASE)-[0-9]+-base\.zip" -printf '.' | wc -m
 RELEASE_NAME=$(RELEASE_BASE)-$(RELEASE_DOT)
 
+PATCH = git apply
+
 LIBC_LIB=/opt/miyoomini-toolchain/arm-none-linux-gnueabihf/libc/lib
 BUNDLE_LIBS=
 
@@ -31,9 +33,16 @@ ifeq "$(GCC_VER_GTE9_0)" "1"
   BUNDLE_LIBS=bundle
 endif
 
-all: lib sdl core emu tools payload readmes $(BUNDLE_LIBS) zip
+all: third-party/SDL-1.2/.patched third-party/picoarch/.patched lib sdl core emu tools payload readmes $(BUNDLE_LIBS) zip
 
 extras: emu
+
+# To fix/move into private repos
+third-party/SDL-1.2/.patched:
+	cd third-party/SDL-1.2 && $(PATCH) -p1 < ../../patches/SDL-1.2/0001-vol-keys.patch && touch .patched
+
+third-party/picoarch/.patched:
+	cd third-party/picoarch && $(PATCH) -p1 < ../../patches/picoarch/0001-pokemini-make.patch && touch .patched
 
 lib:
 	cd ./src/libmsettings && make
@@ -55,7 +64,7 @@ core:
 
 emu:
 	cd ./third-party/picoarch && make platform=miyoomini -j
-	# cd ./third-party/vvvvvv && make -j
+	cd ./third-party/vvvvvv && make -j
 	./bits/commits.sh > ./commits.txt
 
 tools:
@@ -113,7 +122,7 @@ payload:
 	cp ./third-party/picoarch/output/mgba_libretro.so ./build/EXTRAS/Emus/SGB.pak/
 	cp ./third-party/picoarch/output/fake-08_libretro.so ./build/EXTRAS/Emus/P8.pak/
 	cp ./third-party/picoarch/output/nxengine_libretro.so "./build/EXTRAS/Roms/Native Games (SH)/Cave Story/"
-	# cp ./third-party/vvvvvv/vvvvvv "./build/EXTRAS/Roms/Native Games (SH)/VVVVVV/"
+	cp ./third-party/vvvvvv/vvvvvv "./build/EXTRAS/Roms/Native Games (SH)/VVVVVV/"
 	# cp -R ./bits/bootlogos/pak/. ./build/EXTRAS/Tools/Single-use/bootlogo.tmp
 	# cp ./third-party/logotweak/logomake/logomake ./build/EXTRAS/Tools/Single-use/bootlogo.tmp/
 	# cp ./third-party/logotweak/logowrite/logowrite ./build/EXTRAS/Tools/Single-use/bootlogo.tmp/
